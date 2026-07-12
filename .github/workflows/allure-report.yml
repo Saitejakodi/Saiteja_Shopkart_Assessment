@@ -3,7 +3,7 @@ name: ShopKart Allure Report
 on:
   push:
     branches:
-      - main
+      - Saiteja_Week06_Gate6_Assessment
 
 permissions:
   contents: write
