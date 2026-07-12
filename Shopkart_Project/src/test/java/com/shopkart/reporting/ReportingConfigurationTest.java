@@ -88,7 +88,7 @@ public class ReportingConfigurationTest {
         int other =
                 categories.indexOf("Other Failures");
 
-        assertTrue(assertion > other);
+        assertTrue(assertion < other);
 
         assertTrue(ui < other);
 
