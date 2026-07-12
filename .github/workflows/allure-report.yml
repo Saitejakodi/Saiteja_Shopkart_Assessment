@@ -25,23 +25,24 @@ jobs:
         with:
           distribution: temurin
           java-version: 22
+          cache: gradle
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Make Gradle Wrapper Executable
-        working-directory: Shopkart_Project
-        run: chmod +x gradlew
+      - name: Check Gradle
+        run: gradle -v
 
       - name: Run Reporting Tests
         working-directory: Shopkart_Project
-        run: ./gradlew reporting --no-configuration-cache
+        run: gradle reporting --no-configuration-cache
 
       - name: Copy Allure Environment
         if: always()
         run: |
           mkdir -p Shopkart_Project/build/allure-results
-          cp src/test/resources/environment.properties build/allure-results/environment.properties
+          cp Shopkart_Project/src/test/resources/environment.properties \
+             Shopkart_Project/build/allure-results/environment.properties
 
       - name: Checkout gh-pages branch
         if: always()
