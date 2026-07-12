@@ -18,9 +18,7 @@ repositories {
 
 dependencies {
 
-    // ---------------------------
     // JUnit
-    // ---------------------------
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.junit.platform:junit-platform-suite-api")
@@ -28,56 +26,33 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-suite-engine")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-    // ---------------------------
     // Cucumber
-    // ---------------------------
     testImplementation("io.cucumber:cucumber-java:7.14.0")
     testImplementation("io.cucumber:cucumber-junit-platform-engine:7.14.0")
     testImplementation("io.cucumber:cucumber-picocontainer:7.14.0")
 
-    // ---------------------------
     // Selenide
-    // ---------------------------
     testImplementation("com.codeborne:selenide:7.9.3")
 
-    // ---------------------------
     // REST Assured
-    // ---------------------------
     testImplementation("io.rest-assured:rest-assured:5.5.6")
 
-    // ---------------------------
     // Dotenv
-    // ---------------------------
     testImplementation("io.github.cdimascio:dotenv-java:3.2.0")
 
-    // ---------------------------
     // Allure
-    // ---------------------------
     testImplementation("io.qameta.allure:allure-cucumber7-jvm:2.35.1")
     testImplementation("io.qameta.allure:allure-rest-assured:2.35.1")
     testImplementation("io.qameta.allure:allure-selenide:2.35.1")
+    testImplementation("io.qameta.allure:allure-junit5:2.35.1")
 
-    // ---------------------------
     // MySQL
-    // ---------------------------
     testImplementation("com.mysql:mysql-connector-j:9.4.0")
 
-    // ---------------------------
-    // Testcontainers
-    // Keep only if you will use them later
-    // ---------------------------
-    testImplementation("org.testcontainers:junit-jupiter:1.21.3")
-    testImplementation("org.testcontainers:mysql:1.21.3")
 
-    // ---------------------------
-    // Flyway
-    // Keep only if you will use Flyway later
-    // ---------------------------
-    testImplementation("org.flywaydb:flyway-core:11.12.0")
 }
 
 allure {
-
     version.set("2.35.1")
 }
 
@@ -103,16 +78,37 @@ tasks.test {
     }
 }
 
+// Shared test source set
+
+val testSourceSet = sourceSets.test.get()
+
+fun Test.configureTestTask() {
+
+    testClassesDirs = testSourceSet.output.classesDirs
+    classpath = testSourceSet.runtimeClasspath
+
+    useJUnitPlatform()
+
+    systemProperty(
+        "cucumber.plugin",
+        "io.qameta.allure.cucumber7jvm.AllureCucumber7Jvm"
+    )
+}
+
+// Smoke
+
 val smoke by tasks.registering(Test::class) {
 
     description = "Runs Smoke scenarios"
 
     group = "verification"
 
-    useJUnitPlatform()
+    configureTestTask()
 
     systemProperty("cucumber.filter.tags", "@smoke")
 }
+
+// API
 
 val api by tasks.registering(Test::class) {
 
@@ -120,10 +116,12 @@ val api by tasks.registering(Test::class) {
 
     group = "verification"
 
-    useJUnitPlatform()
+    configureTestTask()
 
     systemProperty("cucumber.filter.tags", "@api")
 }
+
+// UI
 
 val ui by tasks.registering(Test::class) {
 
@@ -131,10 +129,12 @@ val ui by tasks.registering(Test::class) {
 
     group = "verification"
 
-    useJUnitPlatform()
+    configureTestTask()
 
     systemProperty("cucumber.filter.tags", "@ui")
 }
+
+// Database
 
 val db by tasks.registering(Test::class) {
 
@@ -142,10 +142,12 @@ val db by tasks.registering(Test::class) {
 
     group = "verification"
 
-    useJUnitPlatform()
+    configureTestTask()
 
     systemProperty("cucumber.filter.tags", "@db")
 }
+
+// Negative
 
 val negative by tasks.registering(Test::class) {
 
@@ -153,10 +155,12 @@ val negative by tasks.registering(Test::class) {
 
     group = "verification"
 
-    useJUnitPlatform()
+    configureTestTask()
 
     systemProperty("cucumber.filter.tags", "@negative")
 }
+
+// Security
 
 val security by tasks.registering(Test::class) {
 
@@ -164,10 +168,12 @@ val security by tasks.registering(Test::class) {
 
     group = "verification"
 
-    useJUnitPlatform()
+    configureTestTask()
 
     systemProperty("cucumber.filter.tags", "@security")
 }
+
+// E2E
 
 val e2e by tasks.registering(Test::class) {
 
@@ -175,18 +181,20 @@ val e2e by tasks.registering(Test::class) {
 
     group = "verification"
 
-    useJUnitPlatform()
+    configureTestTask()
 
     systemProperty("cucumber.filter.tags", "@e2e")
 }
 
+// Reporting
+
 val reporting by tasks.registering(Test::class) {
 
-    description = "Runs reporting framework tests"
+    description = "Runs Reporting framework tests"
 
     group = "verification"
 
-    useJUnitPlatform()
+    configureTestTask()
 
     include("**/ReportingConfigurationTest.class")
 }
