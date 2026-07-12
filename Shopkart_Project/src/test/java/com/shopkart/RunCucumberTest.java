@@ -21,11 +21,6 @@ import static io.cucumber.junit.platform.engine.Constants.FILTER_TAGS_PROPERTY_N
 )
 
 @ConfigurationParameter(
-        key = FILTER_TAGS_PROPERTY_NAME,
-        value = "@e2e"
-)
-
-@ConfigurationParameter(
         key = PLUGIN_PROPERTY_NAME,
         value = """
                 pretty,
