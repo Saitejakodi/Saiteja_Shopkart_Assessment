@@ -30,15 +30,17 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Make Gradle Wrapper Executable
+        working-directory: Shopkart_Project
         run: chmod +x gradlew
 
       - name: Run Reporting Tests
+        working-directory: Shopkart_Project
         run: ./gradlew reporting --no-configuration-cache
 
       - name: Copy Allure Environment
         if: always()
         run: |
-          mkdir -p build/allure-results
+          mkdir -p Shopkart_Project/build/allure-results
           cp src/test/resources/environment.properties build/allure-results/environment.properties
 
       - name: Checkout gh-pages branch
@@ -52,7 +54,7 @@ jobs:
         if: always()
         uses: simple-elf/allure-report-action@master
         with:
-          allure_results: build/allure-results
+          allure_results: Shopkart_Project/build/allure-results
           allure_report: allure-report
           gh_pages: gh-pages
           allure_history: allure-history
